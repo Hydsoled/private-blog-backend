@@ -3,7 +3,10 @@ import * as mongoose from 'mongoose';
 export const User = new mongoose.Schema(
   {
     id: mongoose.Schema.Types.ObjectId,
-    nickname: String,
+    nickname: {
+      type: String,
+      unique: true,
+    },
     token: {
       type: String,
     },

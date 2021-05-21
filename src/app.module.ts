@@ -4,25 +4,19 @@ import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
-import { User } from './user/user.schema';
-import { JwtModule } from '@nestjs/jwt';
+import { PostModule } from './posts/post.module';
+import { AuthModule } from './auth/auth.module';
+import { ChatModule } from './webchat/chat.module';
 
 @Module({
   imports: [
-    // ServeStaticModule.forRoot({
-    //   rootPath: join(__dirname, '..', 'frontend/private-blog'),
-    // }),
-    MongooseModule.forRoot('mongodb://localhost:27017/private-blog'),
-    MongooseModule.forFeature([
-      {
-        name: 'User',
-        schema: User,
-      },
-    ]),
-    JwtModule.register({
-      secret: 'secret',
-      signOptions: { expiresIn: '1m' },
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'frontend/'),
     }),
+    MongooseModule.forRoot('mongodb://localhost:27017/private-blog'),
+    AuthModule,
+    PostModule,
+    ChatModule,
   ],
   controllers: [AppController],
   providers: [AppService],
