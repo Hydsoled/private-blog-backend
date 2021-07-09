@@ -20,6 +20,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
   @SubscribeMessage('message')
   handleEvent(client: any, data: any): WsResponse<any> {
     const event = 'events';
+    console.log(data);
     return { event, data };
   }
 

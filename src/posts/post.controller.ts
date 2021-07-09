@@ -1,7 +1,8 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Next, Post, Req, Res } from '@nestjs/common';
+import { Body, Controller, Get, HttpException, HttpStatus, Next, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { PostService } from './post.service';
 import { NextFunction, Request, Response } from 'express';
 import { AuthService } from '../auth/auth.service';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('posts')
 export class PostController {
@@ -12,15 +13,14 @@ export class PostController {
   }
 
   @Get()
+  @UseGuards(AuthGuard)
   async getPosts(
     @Next() next: NextFunction,
     @Req() request: Request,
     @Res() response: Response,
   ): Promise<any> {
-    let token, user;
     try {
-      token = this.authService.cookieParser(request.headers.cookie).SESSID;
-      user = await this.authService.authenticateUser(token);
+
     } catch (e) {
       response.clearCookie('SESSID');
       response.redirect('/auth');

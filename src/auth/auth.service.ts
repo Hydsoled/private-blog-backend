@@ -19,18 +19,6 @@ export class AuthService {
     });
   }
 
-  async authenticateUser(token: string): Promise<any> {
-    return this.jwtService.verifyAsync(token);
-  }
-
-  cookieParser(cookie: string): any {
-    const cookies = {};
-    cookie.split(';').map((val) => {
-      cookies[val.split('=')[0]] = val.split('=')[1];
-    });
-    return cookies;
-  }
-
   async findOne(condition): Promise<any> {
     const user = await this.userModel.findOne(condition).exec();
     return user && user.password ? user : false;

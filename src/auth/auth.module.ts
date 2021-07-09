@@ -15,12 +15,12 @@ import { JwtModule } from '@nestjs/jwt';
     ]),
     JwtModule.register({
       secret: 'secret',
-      signOptions: { expiresIn: '20s' },
+      signOptions: { expiresIn: '10s' },
     }),
   ],
   controllers: [AuthController],
   providers: [AuthService],
-  exports: [MongooseModule, AuthService],
+  exports: [MongooseModule, JwtModule, AuthService],
 })
 export class AuthModule {
 }
