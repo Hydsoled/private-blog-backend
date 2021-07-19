@@ -1,6 +1,12 @@
-import { CanActivate, ExecutionContext, HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { Observable } from 'rxjs';
+import {
+  CanActivate,
+  ExecutionContext,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { Response } from 'express';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -11,27 +17,22 @@ export class AuthGuard implements CanActivate {
     context: ExecutionContext,
   ): Promise<boolean> {
     const request = context.switchToHttp().getRequest() as Request;
-    const token = this.cookieParser(request.headers['cookie'] || '');
-    if (!token.SESSID) {
+    const response = context.switchToHttp().getResponse() as Response;
+    const token = this.authorizationTokenParser(request.headers['authorization'] || '');
+    if (!token) {
       return false;
     }
-    let user;
     try {
-      user = await this.authenticateUser(token.SESSID);
+      await this.authenticateUser(token);
     } catch (e) {
+      response.clearCookie('SESSID');
       throw new HttpException('PERMISSION ERROR', HttpStatus.FORBIDDEN);
     }
-    console.log(new Date(user.exp * 1000));
-    console.log(new Date(user.iat * 1000));
     return true;
   }
 
-  cookieParser(cookie: string): any {
-    const cookies = {};
-    cookie.split(';').map((val) => {
-      cookies[val.split('=')[0]] = val.split('=')[1];
-    });
-    return cookies;
+  authorizationTokenParser(token: string) {
+    return token.split(' ')[1];
   }
 
   async authenticateUser(token: string): Promise<any> {

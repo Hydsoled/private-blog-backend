@@ -1,53 +1,62 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { JwtService } from '@nestjs/jwt';
+import { RegisterDto } from './dto/register.dto';
+import * as bcrypt from 'bcrypt';
+import { UserRepository } from '../repositories/user.repository';
+import { LoginDto } from './dto/login.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectModel('User') private readonly userModel: Model<any>,
-    private jwtService: JwtService,
+    private userRepository: UserRepository,
   ) {
   }
 
-  generateToken(nickname: string, email: string, password: string) {
-    return this.jwtService.signAsync({
-      nickname,
-      email,
-      password,
-    });
-  }
-
-  async findOne(condition): Promise<any> {
-    const user = await this.userModel.findOne(condition).exec();
-    return user && user.password ? user : false;
-  }
-
-  createUser(nickname: string, email: string, password: string, token: string): Promise<any> {
-    return new this.userModel({
-      nickname,
-      email,
-      password,
-      token,
-    }).save();
-  }
-
-  async updateUser(condition: any, token: string): Promise<any> {
-    return this.userModel.updateOne(condition, { token: token });
-  }
-
-  detectValue(value: string): string {
-    const invalidChars = ((value.match(new RegExp('[!#$%@^&*()_<>?/\-=`~\'\"]')) || []).length > 0);
-    const email = ((value.match(new RegExp('@', 'g')) || []).length === 1);
-    if (!email && invalidChars) {
-      return undefined;
+  async login(body: LoginDto) {
+    const { email, password } = body;
+    let user = await this.userRepository.findByEmail(email);
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
     }
-    if (email) return 'email';
-    return 'nickname';
+    const token = await this.userRepository.generateUserToken(
+      user.nickname,
+      user.email,
+      user.password,
+    );
+    user = await this.userRepository.updateTokenByEmail(email, token);
+    if (!user) {
+      throw new BadRequestException();
+    }
+    return token;
   }
 
-  validRegistration(email, nickname): boolean {
-    return 'email' === this.detectValue(email) && 'nickname' === this.detectValue(nickname);
+  async registration(body: RegisterDto) {
+    const { email, nickname, password } = body;
+    let user = await this.userRepository.findByEmail(email);
+    if (user) {
+      throw new HttpException('EMAIL_EXIST', HttpStatus.BAD_REQUEST);
+    }
+    const hashedPassword = await bcrypt.hash(password, 12);
+    const token = await this.userRepository.generateUserToken(
+      nickname,
+      email,
+      hashedPassword,
+    );
+    user = await this.userRepository.createUser(
+      nickname,
+      email,
+      hashedPassword,
+      token,
+    );
+    if (!user) {
+      throw new BadRequestException();
+    }
+    return token;
+  }
+
+  async logout(token) {
+    console.log(token);
   }
 }

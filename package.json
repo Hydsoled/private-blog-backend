@@ -31,6 +31,8 @@
     "@nestjs/serve-static": "^2.1.4",
     "@nestjs/websockets": "^7.6.17",
     "bcrypt": "^5.0.1",
+    "class-transformer": "^0.4.0",
+    "class-validator": "^0.13.1",
     "mongoose": "^5.12.7",
     "passport-jwt": "^4.0.0",
     "reflect-metadata": "^0.1.13",

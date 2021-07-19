@@ -1,10 +1,10 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Next, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpException, HttpStatus, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { PostService } from './post.service';
-import { NextFunction, Request, Response } from 'express';
 import { AuthService } from '../auth/auth.service';
 import { AuthGuard } from '../auth/auth.guard';
+import { Request, Response } from 'express';
 
-@Controller('posts')
+@Controller('api/post')
 export class PostController {
   constructor(
     private postService: PostService,
@@ -15,21 +15,14 @@ export class PostController {
   @Get()
   @UseGuards(AuthGuard)
   async getPosts(
-    @Next() next: NextFunction,
     @Req() request: Request,
     @Res() response: Response,
   ): Promise<any> {
-    try {
-
-    } catch (e) {
-      response.clearCookie('SESSID');
-      response.redirect('/auth');
-      return;
-    }
-    next();
+    console.log('gamarjobat');
   }
 
   @Post('insert')
+  @UseGuards(AuthGuard)
   async insertPosts(
     @Body('title') title: string,
     @Body('description') description: string,
