@@ -57,6 +57,14 @@ export class AuthService {
   }
 
   async logout(token) {
-    console.log(token);
+    const user = await this.userRepository.findByToken(token);
+    console.log(user);
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+    return {
+      success: true,
+      data: user,
+    };
   }
 }

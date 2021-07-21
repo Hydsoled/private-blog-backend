@@ -1,16 +1,10 @@
-import {
-  Body,
-  Controller,
-  Post,
-  Req,
-  Res,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Response, Request } from 'express';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { AuthGuard } from './auth.guard';
+import { UserToken } from '../services/user.decorator';
 
 @Controller('api/auth')
 export class AuthController {
@@ -46,7 +40,7 @@ export class AuthController {
     });
 
     return {
-      success: true,
+      success: token,
     };
   }
 
@@ -55,10 +49,10 @@ export class AuthController {
   async logout(
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response,
+    @UserToken() token: string,
   ): Promise<any> {
-    console.log(request.headers.token);
-    // const user = await this.authService.logout(token);
+    const res = await this.authService.logout(token);
     response.clearCookie('SESSID');
-    return false;
+    return res;
   }
 }
