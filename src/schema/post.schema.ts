@@ -10,9 +10,6 @@ export class Post {
   id: number;
 
   @Prop({ required: true, type: String })
-  author: string;
-
-  @Prop({ required: true, type: String })
   title: string;
 
   @Prop({ required: true, type: String })

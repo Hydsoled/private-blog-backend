@@ -4,6 +4,7 @@ import { PostService } from './post.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Post, PostSchema } from '../schema/post.schema';
 import { AuthModule } from '../auth/auth.module';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
   imports: [
@@ -13,6 +14,11 @@ import { AuthModule } from '../auth/auth.module';
         schema: PostSchema,
       },
     ]),
+    MulterModule.registerAsync({
+      useFactory: () => ({
+        dest: './src/images',
+      }),
+    }),
     AuthModule,
   ],
   controllers: [PostController],

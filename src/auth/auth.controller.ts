@@ -24,7 +24,8 @@ export class AuthController {
       sameSite: 'lax',
     });
     return {
-      success: token,
+      success: true,
+      data: token,
     };
   }
 
@@ -40,7 +41,8 @@ export class AuthController {
     });
 
     return {
-      success: token,
+      success: true,
+      data: token,
     };
   }
 
