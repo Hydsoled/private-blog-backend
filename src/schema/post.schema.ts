@@ -13,12 +13,27 @@ export class Post {
   title: string;
 
   @Prop({ required: true, type: String })
+  author: string;
+
+  @Prop({ required: true, type: String })
   description: string;
 
-  @Prop({ required: false, type: Date })
+  @Prop({
+    required: false,
+    type: Date,
+    default(val: any): any {
+      return new Date();
+    },
+  })
   createdAt: Date;
 
-  @Prop({ required: false, type: Date })
+  @Prop({
+    required: false,
+    type: Date,
+    default(val: any): any {
+      return new Date();
+    },
+  })
   updatedAt: Date;
 
   @Prop({ required: false, type: String })

@@ -6,5 +6,4 @@ export class CreatePostDto {
 
   @IsString()
   readonly description: string;
-
 }

@@ -2,11 +2,10 @@ import {
   Body,
   Controller,
   Get,
-  HttpException,
-  HttpStatus,
   Post,
   Req,
-  Res, UploadedFile,
+  Res,
+  UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -15,7 +14,9 @@ import { AuthGuard } from '../auth/auth.guard';
 import { Request, Response } from 'express';
 import { CreatePostDto } from './dto/create.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
+import { UserToken } from '../services/user.decorator';
+
+import { saveImageToStorage } from '../helpers/image-uploader.conf';
 
 @Controller('api/post')
 export class PostController {
@@ -35,20 +36,14 @@ export class PostController {
 
   @Post('insert')
   @UseInterceptors(
-    FileInterceptor('photo', {
-      storage: diskStorage({
-        filename(req: any, file: Express.Multer.File, callback: (error: (Error | null), filename: string) => void) {
-          console.log(file);
-          callback(null, 'gamarjobat.png');
-        },
-      }),
-    }),
+    FileInterceptor('photo', saveImageToStorage),
   )
   @UseGuards(AuthGuard)
   async create(
     @Body() body: CreatePostDto,
     @UploadedFile() file: Express.Multer.File,
+    @UserToken() user,
   ): Promise<any> {
-    return true;
+    return await this.postService.insertPost(body, file, user);
   }
 }

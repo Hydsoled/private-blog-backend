@@ -16,7 +16,7 @@ import { UserRepository } from '../repositories/user.repository';
     ]),
     JwtModule.register({
       secret: 'secret',
-      signOptions: { expiresIn: '10m' },
+      signOptions: { expiresIn: '2h' },
     }),
   ],
   controllers: [AuthController],
