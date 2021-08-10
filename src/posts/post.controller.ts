@@ -35,9 +35,7 @@ export class PostController {
   }
 
   @Post('insert')
-  @UseInterceptors(
-    FileInterceptor('photo', saveImageToStorage),
-  )
+  @UseInterceptors(FileInterceptor('photo', saveImageToStorage))
   @UseGuards(AuthGuard)
   async create(
     @Body() body: CreatePostDto,
