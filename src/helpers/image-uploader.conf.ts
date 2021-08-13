@@ -1,6 +1,7 @@
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { v4 as uuidv4 } from 'uuid';
+import { HttpException, HttpStatus } from '@nestjs/common';
 
 type validMimeType = 'image/png' | 'image/jpg' | 'image/jpeg';
 const maxSize: number = 20 * 1024 * 1024; // 20MB
@@ -19,7 +20,11 @@ export const saveImageToStorage = {
     },
   }),
   fileFilter: (req, file, cb) => {
-    validMimeTypes.includes(file.mimetype) ? cb(null, true) : cb(null, false);
+    if (validMimeTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      throw new HttpException('File type is invalid', HttpStatus.BAD_REQUEST);
+    }
   },
   limits: {
     fileSize: maxSize,

@@ -22,7 +22,7 @@ export class Post {
     required: false,
     type: Date,
     default(val: any): any {
-      return new Date();
+      return Date.now();
     },
   })
   createdAt: Date;
@@ -31,7 +31,7 @@ export class Post {
     required: false,
     type: Date,
     default(val: any): any {
-      return new Date();
+      return Date.now();
     },
   })
   updatedAt: Date;

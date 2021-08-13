@@ -1,6 +1,6 @@
 import {
   Body,
-  Controller,
+  Controller, Delete,
   Get,
   Post,
   Req,
@@ -17,6 +17,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { UserToken } from '../services/user.decorator';
 
 import { saveImageToStorage } from '../helpers/image-uploader.conf';
+import { UpdatePostDto } from './dto/update.dto';
 
 @Controller('api/post')
 export class PostController {
@@ -43,5 +44,21 @@ export class PostController {
     @UserToken() user,
   ): Promise<any> {
     return await this.postService.insertPost(body, file, user);
+  }
+
+  @Post('update')
+  @UseInterceptors(FileInterceptor('photo', saveImageToStorage))
+  @UseGuards(AuthGuard)
+  async update(
+    @Body() body: UpdatePostDto,
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<any> {
+    return await this.postService.updatePost(body, file);
+  }
+
+  @Delete()
+  @UseGuards(AuthGuard)
+  async delete(@Body('id') id: string): Promise<any> {
+    return await this.postService.deletePost(id);
   }
 }
